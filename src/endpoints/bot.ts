@@ -1,3 +1,4 @@
+import { sendMessage } from "utils/telegram"
 
 export default async function bot(c: any) {
     const { BOT_TOKEN } = c.env
@@ -8,23 +9,7 @@ export default async function bot(c: any) {
         return c.text('Unauthorized', 401)
     }
 
-    async function sendMessage(chatId: number, text: string) {
-        const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`
-        const response = await fetch(url, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                chat_id: chatId,
-                text: text,
-            }),
-        })
-
-        if (!response.ok) {
-            console.error('Failed to send message:', await response.text())
-        }
-    }
+   
     console.log(await c.req.json())
     const update = await c.req.json()
 
@@ -39,7 +24,7 @@ export default async function bot(c: any) {
         }
 
         // Send a response back to the user
-        await sendMessage(chatId, responseText)
+        await sendMessage(chatId, responseText,BOT_TOKEN)
     }
 
     return c.text('OK')
