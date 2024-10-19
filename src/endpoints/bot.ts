@@ -19,7 +19,7 @@ export default async function bot(c: any) {
 
         let responseText = 'Hello! I received your message.'
 
-        if (text.toLowerCase() === '/start') {
+        if (text && text.toLowerCase() === '/start') {
             responseText = `Welcome! I'm a simple Telegram bot created with Hono.js.`
         }
 
