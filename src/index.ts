@@ -6,10 +6,12 @@ import { TaskFetch } from "./endpoints/taskFetch";
 import { TaskList } from "./endpoints/taskList";
 import bot from "endpoints/bot";
 import radium from "endpoints/radium";
+import ai from "endpoints/ai";
+
 interface MyEnv extends Env {
   BOT_TOKEN: string;
+  AI: any;
 }
-
 // Start a Hono app
 const app = new Hono<{ Bindings: MyEnv }>()
 
@@ -29,5 +31,6 @@ openapi.delete("/api/tasks/:taskSlug", TaskDelete);
 // Register the bot route
 app.post("/bot", bot);
 app.post("/raydium", radium);
+app.get("/ai",ai)
 // Export the Hono app
 export default app;
