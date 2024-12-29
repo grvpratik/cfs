@@ -31,6 +31,9 @@ openapi.delete("/api/tasks/:taskSlug", TaskDelete);
 // Register the bot route
 app.post("/bot", bot);
 app.post("/raydium", radium);
-app.get("/ai",ai)
+app.get("/ai", ai)
+app.get("/health", (c) => 
+  c.text("OK")
+);
 // Export the Hono app
 export default app;

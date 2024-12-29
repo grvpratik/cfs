@@ -1,8 +1,8 @@
 export default async function ai(c: any) {
     try {
         // Get the project idea from the request body
-        const { projectIdea } = await c.req.json();
-
+       // const { projectIdea } = await c.req.json();
+const projectIdea = "a logo generator that uses AI to create unique and professional logos for businesses";
         if (!projectIdea) {
             return new Response(JSON.stringify({
                 error: 'Project idea is required'
@@ -21,6 +21,7 @@ export default async function ai(c: any) {
             Project Idea: ${projectIdea}
             
             Please provide analysis in the following format:
+            
             1. Market Potential
             2. Technical Feasibility
             3. Core Features
@@ -37,7 +38,7 @@ export default async function ai(c: any) {
 
         // Call Cloudflare AI with Llama-2 model for analysis
         const analysisResponse = await c.env.AI.run(
-            '@cf/meta/llama-2-70b-chat',
+            '@cf/meta/llama-3.1-70b-instruct',
             {
                 messages: [
                     {
@@ -69,7 +70,7 @@ export default async function ai(c: any) {
         `;
 
         const techStackResponse = await c.env.AI.run(
-            '@cf/meta/llama-2-70b-chat',
+            '@cf/meta/llama-3.1-70b-instruct',
             {
                 messages: [
                     {
@@ -101,7 +102,7 @@ export default async function ai(c: any) {
         `;
 
         const marketAnalysisResponse = await c.env.AI.run(
-            '@cf/meta/llama-2-70b-chat',
+            '@cf/meta/llama-3.1-70b-instruct',
             {
                 messages: [
                     {
@@ -123,11 +124,11 @@ export default async function ai(c: any) {
             marketAnalysis: marketAnalysisResponse,
             timestamp: new Date().toISOString(),
             modelInfo: {
-                model: '@cf/meta/llama-2-70b-chat',
+                model: '@cf/meta/llama-3.1-70b-instruct',
                 version: '1.0'
             }
         };
-
+console.log(combinedAnalysis);
         // Return the combined analysis
         return new Response(JSON.stringify(combinedAnalysis), {
             headers: {
