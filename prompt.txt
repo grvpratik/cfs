@@ -1,25 +1,4 @@
-
-export default async function ai(c: any) {
-   try {
-      // Get the project idea from the request body
-      //  const { projectIdea } = await c.req.json();
-      const projectIdea = " a ai social media media scheduling tool ";
-      if (!projectIdea) {
-         return new Response(JSON.stringify({
-            error: 'Project idea is required'
-         }), {
-            status: 400,
-            headers: {
-               'Content-Type': 'application/json'
-            }
-         });
-      }
-
-
-
-
-      // 1. Overview Analysis
-      const overviewPrompt = `
+const overviewPrompt = `
                     Provide a comprehensive overview analysis for:
                     Project: ${projectIdea}
 
@@ -57,8 +36,9 @@ export default async function ai(c: any) {
                     Provide specific metrics and detailed explanations for each point.
                 `;
 
-      // 2. Core Features Analysis
-      const featuresPrompt = `Analyze ${projectIdea} and return an array of feature objects with the following structure:
+const overviewSystemRole = 'You are a senior product strategist with extensive experience in software product development and market analysis.';
+
+const featuresPrompt = `Analyze ${projectIdea} and return an array of feature objects with the following structure:
 {
   features: [
     {
@@ -86,11 +66,11 @@ export default async function ai(c: any) {
     estimatedMVPTime: string,
     criticalPath: string[]
   }
-}`
-         ;
+}`;
 
-      // 3. Target Audience Analysis
-      const audiencePrompt = `
+const featuresSystemRole = 'You are a senior product manager specializing in MVP development. Analyze and return a structured array of core features for the project. Focus on technical implementation details and essential components.RETURN CLEAN OBJECT NO TEXT OUTSIDE OBJECT';
+
+const audiencePrompt = `
                     Analyze the target audience for:
                     Project: ${projectIdea}
 
@@ -134,8 +114,9 @@ export default async function ai(c: any) {
                     Include specific data points and market research insights.
                 `;
 
-      // 4. Pros and Cons Analysis
-      const prosConsPrompt = `
+const audienceSystemRole = 'You are a UX researcher specializing in user personas and audience analysis.';
+
+const prosConsPrompt = `
                     Provide a detailed pros and cons analysis for:
                     Project: ${projectIdea}
 
@@ -188,8 +169,9 @@ export default async function ai(c: any) {
                     Provide specific examples and detailed explanations for each point.
                 `;
 
-      // 5. Competition Analysis
-      const competitionPrompt = `
+const prosConsSystemRole = 'You are a business analyst specializing in SWOT analysis and business strategy.';
+
+const competitionPrompt = `
                     Analyze the competitive landscape for:
                     Project: ${projectIdea}
 
@@ -238,8 +220,9 @@ export default async function ai(c: any) {
                     Include specific examples and market data where possible.
                 `;
 
-      // 6. User Problems Analysis
-      const problemsPrompt = `
+const competitionSystemRole = 'You are a competitive intelligence expert with deep knowledge of the software industry.';
+
+const problemsPrompt = `
                     Analyze user problems and pain points for:
                     Project: ${projectIdea}
 
@@ -283,8 +266,9 @@ export default async function ai(c: any) {
                     Provide specific examples and user scenarios for each point.
                 `;
 
-      // 7. Technology Requirements Analysis
-      const technologyPrompt = `Analyze ${projectIdea} and return a structured object with following format:
+const problemsSystemRole = 'You are a UX researcher specializing in user pain points and problem analysis.';
+
+const technologyPrompt = `Analyze ${projectIdea} and return a structured object with following format:
 {
   infrastructure: {
     cloudOptions: {
@@ -448,11 +432,11 @@ export default async function ai(c: any) {
       tradeoffs: string[]
     }
   }
-}`
-         ;
+}`;
 
-      // 8. Implementation Challenges Analysis
-      const challengesPrompt = `
+const technologySystemRole = 'You are a technical architect specializing in modern technology stacks and cloud infrastructure. Analyze and return a structured object of technology requirements, focusing on latest stable technologies and multiple pricing options. RETURN CLEAN OBJECT NO TEXT OUTSIDE OBJECT';
+
+const challengesPrompt = `
                     Analyze implementation challenges for:
                     Project: ${projectIdea}
 
@@ -500,8 +484,9 @@ export default async function ai(c: any) {
                     Provide specific examples and detailed mitigation strategies.
                 `;
 
-      // 9. Similar Ideas Analysis
-      const similarIdeasPrompt = `Analyze ${projectIdea} and return a structured object with following format:
+const challengesSystemRole = 'You are a project manager with expertise in software development and implementation challenges.';
+
+const similarIdeasPrompt = `Analyze ${projectIdea} and return a structured object with following format:
 {
   competitors: {
     establishedPlayers: [
@@ -649,8 +634,9 @@ export default async function ai(c: any) {
   }
 }`;
 
-      // 10. Monetization Analysis
-      const monetizationPrompt = `Analyze ${projectIdea} and return a structured object with following format:
+const similarIdeasSystemRole = 'You are a product innovation specialist with extensive market research experience. Analyze and return a structured object comparing similar products and feature sets ,RETURN CLEAN OBJECT NO TEXT OUTSIDE OBJECT.';
+
+const monetizationPrompt = `Analyze ${projectIdea} and return a structured object with following format:
 {
   revenueModels: {
     freemium: {
@@ -783,203 +769,6 @@ export default async function ai(c: any) {
     },
 
   }
-}`
-         ;
+}`;
 
-
-
-      //////////xxxxxxxxxxxxxxxxxxx///////////////////
-      const overviewResponse = await c.env.AI.run(
-         '@cf/meta/llama-3.3-70b-instruct-fp8-fast',
-         {
-            messages: [
-               {
-                  role: 'system',
-                  content: 'You are a senior product strategist with extensive experience in software product development and market analysis.'
-               },
-               {
-                  role: 'user',
-                  content: overviewPrompt
-               }
-            ]
-         }
-      );
-      const featuresResponse = await c.env.AI.run(
-         '@cf/meta/llama-3.3-70b-instruct-fp8-fast',
-         {
-            messages: [
-               {
-                  role: 'system',
-                  content: 'You are a senior product manager specializing in MVP development. Analyze and return a structured array of core features for the project. Focus on technical implementation details and essential components.RETURN CLEAN OBJECT NO TEXT OUTSIDE OBJECT'
-               },
-               {
-                  role: 'user',
-                  content: featuresPrompt
-               }
-            ]
-         }
-      );
-
-
-      const audienceResponse = await c.env.AI.run(
-         '@cf/meta/llama-3.3-70b-instruct-fp8-fast',
-         {
-            messages: [
-               {
-                  role: 'system',
-                  content: 'You are a UX researcher specializing in user personas and audience analysis.'
-               },
-               {
-                  role: 'user',
-                  content: audiencePrompt
-               }
-            ]
-         }
-      );
-      const prosConsResponse = await c.env.AI.run(
-         '@cf/meta/llama-3.3-70b-instruct-fp8-fast',
-         {
-            messages: [
-               {
-                  role: 'system',
-                  content: 'You are a business analyst specializing in SWOT analysis and business strategy.'
-               },
-               {
-                  role: 'user',
-                  content: prosConsPrompt
-               }
-            ]
-         }
-      );
-      const competitionResponse = await c.env.AI.run(
-         '@cf/meta/llama-3.3-70b-instruct-fp8-fast',
-         {
-            messages: [
-               {
-                  role: 'system',
-                  content: 'You are a competitive intelligence expert with deep knowledge of the software industry.'
-               },
-               {
-                  role: 'user',
-                  content: competitionPrompt
-               }
-            ]
-         }
-      );
-      const problemsResponse = await c.env.AI.run(
-         '@cf/meta/llama-3.3-70b-instruct-fp8-fast',
-         {
-            messages: [
-               {
-                  role: 'system',
-                  content: 'You are a UX researcher specializing in user pain points and problem analysis.'
-               },
-               {
-                  role: 'user',
-                  content: problemsPrompt
-               }
-            ]
-         }
-      );
-      const technologyResponse = await c.env.AI.run(
-         '@cf/meta/llama-3.3-70b-instruct-fp8-fast',
-         {
-            messages: [
-               {
-                  role: 'system',
-                content: 'You are a technical architect specializing in modern technology stacks and cloud infrastructure. Analyze and return a structured object of technology requirements, focusing on latest stable technologies and multiple pricing options. RETURN CLEAN OBJECT NO TEXT OUTSIDE OBJECT'
-               },
-               {
-                  role: 'user',
-                  content: technologyPrompt
-               }
-            ]
-         }
-      );
-      const challengesResponse = await c.env.AI.run(
-         '@cf/meta/llama-3.3-70b-instruct-fp8-fast',
-         {
-            messages: [
-               {
-                  role: 'system',
-                  content: 'You are a project manager with expertise in software development and implementation challenges.'
-               },
-               {
-                  role: 'user',
-                  content: challengesPrompt
-               }
-            ]
-         }
-      );
-      const similarIdeasResponse = await c.env.AI.run(
-         '@cf/meta/llama-3.3-70b-instruct-fp8-fast',
-         {
-            messages: [
-               {
-                  role: 'system',
-                content: 'You are a product innovation specialist with extensive market research experience. Analyze and return a structured object comparing similar products and feature sets ,RETURN CLEAN OBJECT NO TEXT OUTSIDE OBJECT.'
-               },
-               {
-                  role: 'user',
-                  content: similarIdeasPrompt
-               }
-            ]
-         }
-      );
-      const monetizationResponse = await c.env.AI.run(
-         '@cf/meta/llama-3.3-70b-instruct-fp8-fast',
-         {
-            messages: [
-               {
-                  role: 'system',
-                  content: 'You are a business strategist specializing in SaaS monetization. Analyze and return a structured object focusing on freemium, subscription, and token-based pricing models.'
-               },
-               {
-                  role: 'user',
-                  content: monetizationPrompt
-               }
-            ]
-         }
-      );
-
-      const combinedAnalysis = {
-         overview: overviewResponse,
-         features: featuresResponse,
-         audience: audienceResponse,
-         prosCons: prosConsResponse,
-         competition: competitionResponse,
-         problems: problemsResponse,
-         technology: technologyResponse,
-         challenges: challengesResponse,
-         similarIdeas: similarIdeasResponse,
-        monetization: monetizationResponse,
-         timestamp: new Date().toISOString(),
-         
-      };
-      // Return the combined analysis
-
-      return new Response(JSON.stringify(combinedAnalysis), {
-         headers: {
-            'Content-Type': 'application/json',
-            'Cache-Control': 'max-age=3600',
-            'Access-Control-Allow-Origin': 'http://localhost:5173',
-            'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-            'Access-Control-Allow-Headers': 'Content-Type'
-
-         }
-      });
-   } catch (error) {
-      // Error handling
-      console.error('Analysis error:', error);
-      return new Response(JSON.stringify({
-         error: 'Failed to analyze project idea',
-         details: error.message
-      }), {
-         status: 500,
-         headers: {
-            'Content-Type': 'application/json'
-         }
-      });
-   }
-}
-
+const monetizationSystemRole = 'You are a business strategist specializing in SaaS monetization. Analyze and return a structured object focusing on freemium, subscription, and token-based pricing models.';
