@@ -8,6 +8,7 @@ import bot from "endpoints/bot";
 import radium from "endpoints/radium";
 import ai from "endpoints/ai";
 import gemini from "endpoints/gemini";
+import { cors } from 'hono/cors'
 
 interface MyEnv extends Env {
   BOT_TOKEN: string;
@@ -16,6 +17,19 @@ interface MyEnv extends Env {
 }
 // Start a Hono app
 const app = new Hono<{ Bindings: MyEnv }>()
+app.use('/*', cors())
+
+app.use(
+  '/*',
+  cors({
+    origin: '*',
+    allowHeaders: ['X-Custom-Header', 'Upgrade-Insecure-Requests'],
+    allowMethods: ['POST', 'GET', 'OPTIONS'],
+    exposeHeaders: ['Content-Length', 'X-Kuma-Revision'],
+    maxAge: 600,
+    credentials: true,
+  })
+)
 
 // Setup OpenAPI registry
 const openapi = fromHono(app, {
@@ -34,7 +48,7 @@ openapi.delete("/api/tasks/:taskSlug", TaskDelete);
 app.post("/bot", bot);
 app.post("/raydium", radium);
 app.get("/ai", ai)
-app.get("/gemini", gemini)
+app.post("/gemini", gemini)
 
 app.get("/health", (c) => 
   c.text("OK")

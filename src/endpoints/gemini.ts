@@ -2,10 +2,11 @@ import {
     GoogleGenerativeAI,
     HarmCategory,
     HarmBlockThreshold,
-} from "@google/generative-ai"; 
-export default async function gemini(c: any) { 
+} from "@google/generative-ai";
+export default async function gemini(c: any) {
     const { GEMINI_API } = c.env
-
+    const body = await c.req.json();
+    console.log(await body, "BODY");
     const genAI = new GoogleGenerativeAI(GEMINI_API);
     const model = genAI.getGenerativeModel({
         model: "gemini-2.0-flash-exp",
@@ -19,7 +20,7 @@ export default async function gemini(c: any) {
         responseMimeType: "application/json",
     };
 
-    
+
     const chatSession = model.startChat({
         generationConfig,
         history: [
@@ -54,13 +55,14 @@ export default async function gemini(c: any) {
         ],
     });
 
-
-    const result = await chatSession.sendMessage("solana wallet analyser like total pnl etc using AI ", );
+    const idea = body.idea;
+    if (!idea) {
+        return c.text("Please provide a business idea for analysis.");
+    }
+    const result = await chatSession.sendMessage(idea);
     const textRes = result.response.text();
-    const JsonRes=JSON.parse(textRes);
-   // console.log(JSON.parse(textRes));
-    //    console.log(result.response.text());
-    
+    const JsonRes = JSON.parse(textRes);
+
 
     return new Response(JSON.stringify(JsonRes), {
         headers: {
@@ -73,5 +75,5 @@ export default async function gemini(c: any) {
         },
     })
 
-    
+
 }
